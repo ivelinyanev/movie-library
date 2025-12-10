@@ -1,5 +1,6 @@
 package movielibrary.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.users.LoginUserDto;
 import movielibrary.models.User;
@@ -29,7 +30,7 @@ public class AuthController {
     /* ------------------------- Public part ------------------------- */
 
     @PostMapping("/public/auth/login")
-    public ResponseEntity<?> login(@RequestBody LoginUserDto dto) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginUserDto dto) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.username(), dto.password())

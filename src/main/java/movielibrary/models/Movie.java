@@ -9,19 +9,19 @@ import lombok.Setter;
 import java.time.Year;
 
 @Entity
-@Table(name = "books")
+@Table(name = "movies")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Book {
+public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_id")
+    @Column(name = "movie_id")
     Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, unique = true)
     String title;
 
     @Column(name = "director", nullable = false)
@@ -32,4 +32,10 @@ public class Book {
 
     @Column(name = "rating")
     Double rating;
+
+    public Movie(String title, String director, Year releaseYear) {
+        this.title = title;
+        this.director = director;
+        this.releaseYear = releaseYear;
+    }
 }

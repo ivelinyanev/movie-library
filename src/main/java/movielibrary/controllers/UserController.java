@@ -1,5 +1,6 @@
 package movielibrary.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.users.UserCreateDto;
 import movielibrary.dtos.users.UserResponseDto;
@@ -25,11 +26,11 @@ public class UserController {
 
     /* ------------------------- Public part ------------------------- */
 
-    @PostMapping("/public/create")
-    public ResponseEntity<?> create(@RequestBody UserCreateDto dto) {
+    @PostMapping("/public/users/create")
+    public ResponseEntity<?> create(@Valid @RequestBody UserCreateDto dto) {
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(userService.create(dto));
     }
 
@@ -37,7 +38,7 @@ public class UserController {
 
     @PutMapping("/private/users")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserResponseDto> update(@RequestBody UserUpdateDto dto) {
+    public ResponseEntity<UserResponseDto> update(@Valid @RequestBody UserUpdateDto dto) {
         UserResponseDto response = userService.update(dto);
 
         /*
@@ -57,7 +58,7 @@ public class UserController {
                 .build();
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.ACCEPTED)
                 .header("Set-Cookie", cookie.toString())
                 .body(response);
     }

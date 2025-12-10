@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    boolean existsByUsername(String username);
+    boolean existsByUsernameAndIdNot(String username, Long id);
 
     @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
     Optional<User> findByUsernameWithRoles(@Param("username") String username);

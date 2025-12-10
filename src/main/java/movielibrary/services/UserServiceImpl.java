@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto create(UserCreateDto dto) {
-        if (existsByUsername(dto.username())) {
+        if (hasDuplicate(dto.username())) {
             throw new DuplicateEntityException("User", "username", dto.username());
         }
 
@@ -93,6 +93,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto update(UserUpdateDto dto) {
         User actingUser = authUtils.getAuthenticatedUser();
+
+        if (hasDuplicate(dto.username())) {
+            throw new DuplicateEntityException("User", "username", dto.username());
+        }
 
         if (dto.username() != null) actingUser.setUsername(dto.username());
         if (dto.password() != null) actingUser.setPassword(passwordEncoder.encode(dto.password()));
@@ -118,7 +122,12 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    private boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+    private boolean hasDuplicate(String username) {
+        User actingUser = authUtils.getAuthenticatedUser();
+
+        if (username == null) return false;
+        if (username.equals(actingUser.getUsername())) return false;
+
+        return userRepository.existsByUsernameAndIdNot(username, actingUser.getId());
     }
 }
