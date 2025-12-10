@@ -56,4 +56,8 @@ public class JwtUtils {
                 .getBody()
                 .getSubject();
     }
+
+    public String regenerateToken(String username, Set<String> roles) {
+        return generateToken(username, roles);
+    }
 }
