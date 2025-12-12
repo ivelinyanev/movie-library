@@ -1,5 +1,7 @@
 package movielibrary.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.users.LoginUserDto;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -30,6 +33,10 @@ public class AuthController {
 
     /* ------------------------- Public part ------------------------- */
 
+    @Operation(
+            summary = "Log in",
+            description = "Log in generates and sets a JWT token in cookies"
+    )
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginUserDto dto) {
 
@@ -58,6 +65,10 @@ public class AuthController {
                 .build();
     }
 
+    @Operation(
+            summary = "Log out",
+            description = "Log out sets an expired cookie, thus logging out the user"
+    )
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")

@@ -1,5 +1,7 @@
 package movielibrary.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.movies.MovieCreateDto;
@@ -18,12 +20,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/movies")
 @RequiredArgsConstructor
+@Tag(name = "Movies")
 public class MovieController {
 
     private final MovieService movieService;
     private final MovieMapper mapper;
 
-    @GetMapping()
+    @Operation(
+            summary = "Get all movies"
+    )
+    @GetMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<MovieResponseDto>> getAll() {
 
@@ -37,6 +43,9 @@ public class MovieController {
                 );
     }
 
+    @Operation(
+            summary = "Get a movie by id"
+    )
     @GetMapping("/id/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<MovieResponseDto> getById(@PathVariable Long id) {
@@ -46,6 +55,9 @@ public class MovieController {
                 .body(mapper.toResponseDto(movieService.getById(id)));
     }
 
+    @Operation(
+            summary = "Get a movie by title"
+    )
     @GetMapping("/title/{title}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<MovieResponseDto> getByTitle(@PathVariable String title) {
@@ -55,7 +67,11 @@ public class MovieController {
                 .body(mapper.toResponseDto(movieService.getByTitle(title)));
     }
 
-    @PostMapping()
+    @Operation(
+            summary = "Create a movie",
+            description = "Creates a movie and calls external API to set movie rating asynchronously"
+    )
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MovieResponseDto> create(@Valid @RequestBody MovieCreateDto dto) {
         Movie movie = movieService.create(mapper.toMovie(dto));
@@ -65,6 +81,9 @@ public class MovieController {
                 .body(mapper.toResponseDto(movie));
     }
 
+    @Operation(
+            summary = "Update a movie"
+    )
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MovieResponseDto> update(@PathVariable Long id, @Valid @RequestBody MovieUpdateDto dto) {
@@ -75,6 +94,9 @@ public class MovieController {
                 .body(mapper.toResponseDto(movie));
     }
 
+    @Operation(
+            summary = "Delete a movie"
+    )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

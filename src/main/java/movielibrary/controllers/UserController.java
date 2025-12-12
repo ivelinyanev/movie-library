@@ -1,5 +1,7 @@
 package movielibrary.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.users.UserCreateDto;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "Users")
 public class UserController {
 
     private final UserService userService;
@@ -29,7 +32,10 @@ public class UserController {
 
     /* ------------------------- Public part ------------------------- */
 
-    @PostMapping()
+    @Operation(
+            summary = "Create a user"
+    )
+    @PostMapping
     public ResponseEntity<UserResponseDto> create(@Valid @RequestBody UserCreateDto dto) {
         User user = userService.create(mapper.toUser(dto));
 
@@ -40,7 +46,11 @@ public class UserController {
 
     /* ------------------------- Private part ------------------------- */
 
-    @PutMapping()
+    @Operation(
+            summary = "Update a user",
+            description = "Self update only"
+    )
+    @PutMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserResponseDto> selfUpdate(@Valid @RequestBody UserUpdateDto dto) {
         User user = userService.update(mapper.toUser(dto));
@@ -67,7 +77,11 @@ public class UserController {
                 .body(mapper.toResponseDto(user));
     }
 
-    @DeleteMapping()
+    @Operation(
+            summary = "Delete a user",
+            description = "User can self delete only"
+    )
+    @DeleteMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> delete() {
         userService.delete();
@@ -78,7 +92,11 @@ public class UserController {
     }
 
     /* ------------------------- Admin part ------------------------- */
-    @GetMapping()
+
+    @Operation(
+            summary = "Get all users"
+    )
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDto>> getAll() {
 
@@ -92,6 +110,9 @@ public class UserController {
                 );
     }
 
+    @Operation(
+            summary = "Get a user by id"
+    )
     @GetMapping("/id/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> getById(@PathVariable Long id) {
@@ -101,6 +122,9 @@ public class UserController {
                 .body(mapper.toResponseDto(userService.getById(id)));
     }
 
+    @Operation(
+            summary = "Get a user by username"
+    )
     @GetMapping("/username/{username}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> getByUsername(@PathVariable String username) {
@@ -110,6 +134,10 @@ public class UserController {
                 .body(mapper.toResponseDto(userService.getByUsername(username)));
     }
 
+    @Operation(
+            summary = "Delete a user",
+            description = "Admin can delete any user"
+    )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> adminDelete(@PathVariable Long id) {
