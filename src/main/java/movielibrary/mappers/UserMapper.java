@@ -2,6 +2,7 @@ package movielibrary.mappers;
 
 import movielibrary.dtos.users.UserCreateDto;
 import movielibrary.dtos.users.UserResponseDto;
+import movielibrary.dtos.users.UserUpdateDto;
 import movielibrary.models.User;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,13 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toUser(UserCreateDto dto) {
+        return new User(
+                dto.username(),
+                dto.password()
+        );
+    }
+
+    public User toUser(UserUpdateDto dto) {
         return new User(
                 dto.username(),
                 dto.password()

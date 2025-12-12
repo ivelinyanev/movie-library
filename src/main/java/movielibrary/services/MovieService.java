@@ -1,22 +1,20 @@
 package movielibrary.services;
 
-import movielibrary.dtos.movies.MovieCreateDto;
-import movielibrary.dtos.movies.MovieResponseDto;
-import movielibrary.dtos.movies.MovieUpdateDto;
+import movielibrary.models.Movie;
 
 import java.util.List;
 
 public interface MovieService {
 
-    List<MovieResponseDto> getAll();
+    List<Movie> getAll();
 
-    MovieResponseDto getById(Long id);
+    Movie getById(Long id);
 
-    MovieResponseDto getByTitle(String title);
+    Movie getByTitle(String title);
 
-    MovieResponseDto create(MovieCreateDto dto);
+    Movie create(Movie movie);
 
-    MovieResponseDto update(Long id, MovieUpdateDto dto);
+    Movie update(Long id, Movie movie);
 
     void delete(Long id);
 

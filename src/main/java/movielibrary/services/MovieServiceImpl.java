@@ -19,67 +19,60 @@ import java.util.List;
 public class MovieServiceImpl implements MovieService {
 
     private final MovieRepository movieRepository;
-    private final MovieMapper mapper;
+    private final RatingEnrichmentService ratingEnrichmentService;
 
     @Override
     @Transactional(readOnly = true)
-    public List<MovieResponseDto> getAll() {
+    public List<Movie> getAll() {
 
-        return movieRepository
-                .findAll()
-                .stream()
-                .map(mapper::toResponseDto)
-                .toList();
+        return movieRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public MovieResponseDto getById(Long id) {
-        Movie movie = movieRepository.findById(id)
+    public Movie getById(Long id) {
+
+        return movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movie", "id", String.valueOf(id)));
-
-        return mapper.toResponseDto(movie);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public MovieResponseDto getByTitle(String title) {
-        Movie movie = movieRepository.findByTitle(title)
+    public Movie getByTitle(String title) {
+
+        return movieRepository.findByTitle(title)
                 .orElseThrow(() -> new EntityNotFoundException("Movie", "title", title));
-
-        return mapper.toResponseDto(movie);
     }
 
     @Override
     @Transactional
-    public MovieResponseDto create(MovieCreateDto dto) {
-        if (hasDuplicate(dto.title())) {
-            throw new DuplicateEntityException("Movie", "title", dto.title());
+    public Movie create(Movie movie) {
+        if (hasDuplicate(movie.getTitle())) {
+            throw new DuplicateEntityException("Movie", "title", movie.getTitle());
         }
 
-        Movie movie = mapper.toMovie(dto);
-        movieRepository.save(movie);
+        Double enrichedRating = ratingEnrichmentService.getRating(movie.getTitle()).join();
+        movie.setRating(enrichedRating);
 
-        return mapper.toResponseDto(movie);
+        return movieRepository.save(movie);
     }
 
     @Override
     @Transactional
-    public MovieResponseDto update(Long id, MovieUpdateDto dto) {
-        Movie movie = movieRepository.findById(id)
+    public Movie update(Long id, Movie movie) {
+        Movie updateMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movie", "id", String.valueOf(id)));
 
-        if(hasDuplicate(dto.title(), id)) {
-            throw new DuplicateEntityException("Movie", "title", dto.title());
+        if (hasDuplicate(movie.getTitle(), id)) {
+            throw new DuplicateEntityException("Movie", "title", movie.getTitle());
         }
 
-        if (dto.title() != null) movie.setTitle(dto.title());
-        if (dto.director() != null) movie.setDirector(dto.director());
-        if (dto.releaseYear() != null) movie.setReleaseYear(dto.releaseYear());
-        if (dto.rating() != null) movie.setRating(dto.rating());
+        if (movie.getTitle() != null) updateMovie.setTitle(movie.getTitle());
+        if (movie.getDirector() != null) updateMovie.setDirector(movie.getDirector());
+        if (movie.getReleaseYear() != null) updateMovie.setReleaseYear(movie.getReleaseYear());
+        if (movie.getRating() != null) updateMovie.setRating(movie.getRating());
 
-        movieRepository.saveAndFlush(movie);
-        return mapper.toResponseDto(movie);
+        return movieRepository.saveAndFlush(movie);
     }
 
     @Override

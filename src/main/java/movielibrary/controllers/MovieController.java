@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.movies.MovieCreateDto;
 import movielibrary.dtos.movies.MovieResponseDto;
 import movielibrary.dtos.movies.MovieUpdateDto;
+import movielibrary.mappers.MovieMapper;
+import movielibrary.models.Movie;
 import movielibrary.services.MovieService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,63 +16,66 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/movies")
 @RequiredArgsConstructor
 public class MovieController {
 
     private final MovieService movieService;
+    private final MovieMapper mapper;
 
-    @GetMapping("/private/movies")
+    @GetMapping()
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<MovieResponseDto>> getAll() {
-        List<MovieResponseDto> response = movieService.getAll();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(response);
+                .body(
+                        movieService.getAll()
+                                .stream()
+                                .map(mapper::toResponseDto)
+                                .toList()
+                );
     }
 
-    @GetMapping("/private/movies/id/{id}")
+    @GetMapping("/id/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<MovieResponseDto> getById(@PathVariable Long id) {
-        MovieResponseDto response = movieService.getById(id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(response);
+                .body(mapper.toResponseDto(movieService.getById(id)));
     }
 
-    @GetMapping("/private/movies/title/{title}")
+    @GetMapping("/title/{title}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<MovieResponseDto> getByTitle(@PathVariable String title) {
-        MovieResponseDto response = movieService.getByTitle(title);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(response);
+                .body(mapper.toResponseDto(movieService.getByTitle(title)));
     }
 
-    @PostMapping("/admin/movies")
+    @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MovieResponseDto> create(@Valid @RequestBody MovieCreateDto dto) {
-        MovieResponseDto response = movieService.create(dto);
+        Movie movie = movieService.create(mapper.toMovie(dto));
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(response);
+                .body(mapper.toResponseDto(movie));
     }
 
-    @PutMapping("/admin/movies/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MovieResponseDto> update(@PathVariable Long id, @Valid @RequestBody MovieUpdateDto dto) {
-        MovieResponseDto response = movieService.update(id, dto);
+        Movie movie = movieService.update(id, mapper.toMovie(dto));
 
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
-                .body(response);
+                .body(mapper.toResponseDto(movie));
     }
 
-    @DeleteMapping("/admin/movies/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         movieService.delete(id);

@@ -29,35 +29,28 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthUtils authUtils;
-    private final UserMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseDto> getAll() {
+    public List<User> getAll() {
 
-        return userRepository
-                .findAll()
-                .stream()
-                .map(mapper::toResponseDto)
-                .toList();
+        return userRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDto getById(Long id) {
-        User user = userRepository.findById(id)
+    public User getById(Long id) {
+
+        return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User", "id", String.valueOf(id)));
-
-        return mapper.toResponseDto(user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDto getByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User", "username", username));
+    public User getByUsername(String username) {
 
-        return mapper.toResponseDto(user);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User", "username", username));
     }
 
     /*
@@ -72,12 +65,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponseDto create(UserCreateDto dto) {
-        if (hasDuplicate(dto.username())) {
-            throw new DuplicateEntityException("User", "username", dto.username());
+    public User create(User user) {
+        if (hasDuplicate(user.getUsername())) {
+            throw new DuplicateEntityException("User", "username", user.getUsername());
         }
-
-        User user = mapper.toUser(dto);
 
         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                 .orElseThrow(() -> new EntityNotFoundException(USER_ROLE_NOT_FOUND));
@@ -85,24 +76,22 @@ public class UserServiceImpl implements UserService {
         user.getRoles().add(userRole);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userRepository.save(user);
-        return mapper.toResponseDto(user);
+        return userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public UserResponseDto update(UserUpdateDto dto) {
+    public User update(User user) {
         User actingUser = authUtils.getAuthenticatedUser();
 
-        if (hasDuplicate(dto.username())) {
-            throw new DuplicateEntityException("User", "username", dto.username());
+        if (hasDuplicate(user.getUsername())) {
+            throw new DuplicateEntityException("User", "username", user.getUsername());
         }
 
-        if (dto.username() != null) actingUser.setUsername(dto.username());
-        if (dto.password() != null) actingUser.setPassword(passwordEncoder.encode(dto.password()));
+        if (user.getUsername() != null) actingUser.setUsername(user.getUsername());
+        if (user.getPassword() != null) actingUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userRepository.saveAndFlush(actingUser);
-        return mapper.toResponseDto(actingUser);
+        return userRepository.saveAndFlush(actingUser);
     }
 
     @Override

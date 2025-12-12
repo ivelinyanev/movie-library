@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.users.UserCreateDto;
 import movielibrary.dtos.users.UserResponseDto;
 import movielibrary.dtos.users.UserUpdateDto;
+import movielibrary.mappers.UserMapper;
+import movielibrary.models.User;
 import movielibrary.security.JwtUtils;
 import movielibrary.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -17,36 +19,38 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final JwtUtils jwtUtils;
+    private final UserMapper mapper;
 
     /* ------------------------- Public part ------------------------- */
 
-    @PostMapping("/public/users/create")
-    public ResponseEntity<?> create(@Valid @RequestBody UserCreateDto dto) {
+    @PostMapping()
+    public ResponseEntity<UserResponseDto> create(@Valid @RequestBody UserCreateDto dto) {
+        User user = userService.create(mapper.toUser(dto));
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(userService.create(dto));
+                .body(mapper.toResponseDto(user));
     }
 
     /* ------------------------- Private part ------------------------- */
 
-    @PutMapping("/private/users")
+    @PutMapping()
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserResponseDto> update(@Valid @RequestBody UserUpdateDto dto) {
-        UserResponseDto response = userService.update(dto);
+    public ResponseEntity<UserResponseDto> selfUpdate(@Valid @RequestBody UserUpdateDto dto) {
+        User user = userService.update(mapper.toUser(dto));
 
         /*
             after an update, regenerate token
          */
         String token = jwtUtils.regenerateToken(
-                response.username(),
-                response.roles().stream().map(r -> r.getName().name()).collect(Collectors.toSet())
+                user.getUsername(),
+                user.getRoles().stream().map(r -> r.getName().name()).collect(Collectors.toSet())
         );
 
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
@@ -60,10 +64,10 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .header("Set-Cookie", cookie.toString())
-                .body(response);
+                .body(mapper.toResponseDto(user));
     }
 
-    @DeleteMapping("/private/users")
+    @DeleteMapping()
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> delete() {
         userService.delete();
@@ -74,36 +78,39 @@ public class UserController {
     }
 
     /* ------------------------- Admin part ------------------------- */
-
-    @GetMapping("/admin/users/id/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> getById(@PathVariable Long id) {
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getById(id));
-    }
-
-    @GetMapping("/admin/users/username/{username}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> getByUsername(@PathVariable String username) {
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getByUsername(username));
-    }
-
-
-    @GetMapping("/admin/users")
+    @GetMapping()
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDto>> getAll() {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userService.getAll());
+                .body(
+                        userService.getAll()
+                                .stream()
+                                .map(mapper::toResponseDto)
+                                .toList()
+                );
     }
 
-    @DeleteMapping("/admin/users/{id}")
+    @GetMapping("/id/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponseDto> getById(@PathVariable Long id) {
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(mapper.toResponseDto(userService.getById(id)));
+    }
+
+    @GetMapping("/username/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponseDto> getByUsername(@PathVariable String username) {
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(mapper.toResponseDto(userService.getByUsername(username)));
+    }
+
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> adminDelete(@PathVariable Long id) {
         userService.adminDelete(id);

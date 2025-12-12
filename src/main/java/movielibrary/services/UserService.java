@@ -1,25 +1,22 @@
 package movielibrary.services;
 
-import movielibrary.dtos.users.UserCreateDto;
-import movielibrary.dtos.users.UserResponseDto;
-import movielibrary.dtos.users.UserUpdateDto;
 import movielibrary.models.User;
 
 import java.util.List;
 
 public interface UserService {
 
-    List<UserResponseDto> getAll();
+    List<User> getAll();
 
-    UserResponseDto getById(Long id);
+    User getById(Long id);
 
-    UserResponseDto getByUsername(String username);
+    User getByUsername(String username);
 
     User getEntityByUsername(String username);
 
-    UserResponseDto create(UserCreateDto dto);
+    User create(User user);
 
-    UserResponseDto update(UserUpdateDto dto);
+    User update(User user);
 
     void delete();
 

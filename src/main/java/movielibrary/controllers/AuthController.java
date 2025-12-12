@@ -3,6 +3,7 @@ package movielibrary.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movielibrary.dtos.users.LoginUserDto;
+import movielibrary.mappers.UserMapper;
 import movielibrary.models.User;
 import movielibrary.security.JwtUtils;
 import movielibrary.services.UserService;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -29,7 +30,7 @@ public class AuthController {
 
     /* ------------------------- Public part ------------------------- */
 
-    @PostMapping("/public/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginUserDto dto) {
 
         authenticationManager.authenticate(
@@ -57,7 +58,7 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/public/auth/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
