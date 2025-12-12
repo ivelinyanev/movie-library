@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 } catch (UsernameNotFoundException ex) {
                     // user referenced by token no longer exists (username changed/deleted)
-                    // do not rethrow — just log and continue the chain so endpoints like logout can clear the cookie
+                    // does not rethrow — just logs and continues the chain so logout endpoint can clear the cookie
                     log.debug("User from token not found: {}", username);
                 } catch (Exception ex) {
                     log.error("Failed to set authentication from JWT", ex);

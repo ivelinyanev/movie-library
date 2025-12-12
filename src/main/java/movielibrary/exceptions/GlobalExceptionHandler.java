@@ -108,10 +108,22 @@ public class GlobalExceptionHandler {
     }
 
     private String extractReadableMessage(Exception e) {
+        if (e instanceof MethodArgumentNotValidException ex) {
+            String messages = ex.getBindingResult()
+                    .getFieldErrors()
+                    .stream()
+                    .map(fe -> {
+                        String dm = fe.getDefaultMessage();
+                        return (dm == null || dm.isBlank()) ? fe.getField() : dm;
+                    })
+                    .collect(java.util.stream.Collectors.joining("; "));
+            if (!messages.isBlank()) return messages;
+        }
+
         String message = e.getMessage();
 
         if (message != null && message.contains(VALIDATION_FAILED)) {
-            return VALUES_INVALID_OR_NOT_WITHIN_REASONABLE_RANGE;
+            return message;
         }
         if (message != null && message.contains(DESERIALIZATION_FAILED)) {
             return DESERIALIZATION_FAILED_UNEXPECTED_TYPE;
