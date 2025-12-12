@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import movielibrary.enums.Status;
 
 import java.time.Year;
 
@@ -32,6 +33,10 @@ public class Movie {
 
     @Column(name = "rating")
     Double rating;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    Status status;
 
     public Movie(String title, String director, Year releaseYear) {
         this.title = title;

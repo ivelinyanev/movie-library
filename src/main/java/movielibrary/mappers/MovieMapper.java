@@ -30,7 +30,8 @@ public class MovieMapper {
                 movie.getTitle(),
                 movie.getDirector(),
                 movie.getReleaseYear(),
-                movie.getRating()
+                movie.getRating(),
+                movie.getStatus()
         );
     }
 

@@ -1,13 +1,9 @@
 package movielibrary.services;
 
 import lombok.RequiredArgsConstructor;
-import movielibrary.dtos.users.UserCreateDto;
-import movielibrary.dtos.users.UserResponseDto;
-import movielibrary.dtos.users.UserUpdateDto;
 import movielibrary.enums.ERole;
 import movielibrary.exceptions.DuplicateEntityException;
 import movielibrary.exceptions.EntityNotFoundException;
-import movielibrary.mappers.UserMapper;
 import movielibrary.models.Role;
 import movielibrary.models.User;
 import movielibrary.repositories.RoleRepository;

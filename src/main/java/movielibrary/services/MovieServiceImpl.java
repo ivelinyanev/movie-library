@@ -1,12 +1,9 @@
 package movielibrary.services;
 
 import lombok.RequiredArgsConstructor;
-import movielibrary.dtos.movies.MovieCreateDto;
-import movielibrary.dtos.movies.MovieResponseDto;
-import movielibrary.dtos.movies.MovieUpdateDto;
+import movielibrary.enums.Status;
 import movielibrary.exceptions.DuplicateEntityException;
 import movielibrary.exceptions.EntityNotFoundException;
-import movielibrary.mappers.MovieMapper;
 import movielibrary.models.Movie;
 import movielibrary.repositories.MovieRepository;
 import org.springframework.stereotype.Service;
@@ -51,10 +48,11 @@ public class MovieServiceImpl implements MovieService {
             throw new DuplicateEntityException("Movie", "title", movie.getTitle());
         }
 
-        Double enrichedRating = ratingEnrichmentService.getRating(movie.getTitle()).join();
-        movie.setRating(enrichedRating);
+        movie.setStatus(Status.PENDING);
+        Movie saved = movieRepository.save(movie);
 
-        return movieRepository.save(movie);
+        ratingEnrichmentService.enrichRating(saved.getId());
+        return saved;
     }
 
     @Override
