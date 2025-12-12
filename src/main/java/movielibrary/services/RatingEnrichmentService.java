@@ -27,7 +27,7 @@ public class RatingEnrichmentService {
     }
 
     @Async
-    @Transactional()
+    @Transactional
     public void enrichRating(Long movieId) {
         Movie movie = repository.findById(movieId)
                 .orElseThrow(() -> new IllegalStateException("Movie disappeared"));
