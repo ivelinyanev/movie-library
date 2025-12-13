@@ -34,7 +34,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authProvider(
+    public AuthenticationProvider provider(
             UserDetailsService service,
             PasswordEncoder encoder
     ) {
