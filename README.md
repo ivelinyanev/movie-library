@@ -76,7 +76,12 @@ Swagger UI is available once the application is running:
 
 ## Database Diagram
 
-<img src="db/diagram.png" />
+<img src="db/diagram.png" width="400"/>
+
+## Technical Documentation
+
+For a detailed description of the system architecture, security, and asynchronous processing, see  
+[TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md)
 
 ## Contributors
 For further information, please feel free to contact me:
@@ -84,3 +89,7 @@ For further information, please feel free to contact me:
 | Authors              | Emails    | GitHub|
 | ------               | ------    |------ |
 | Ivelin Yanev         | ivelinyanev00@gmail.com     | https://github.com/ivelinyanev  |
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
