@@ -11,4 +11,5 @@ public class StringConstants {
     public static final String DESERIALIZATION_FAILED = "Cannot deserialize value of type";
     public static final String DESERIALIZATION_FAILED_UNEXPECTED_TYPE = "Deserialization failed for a field. This happens when a value inside the request body is not of the expected type";
     public static final String REQUEST_BODY_COULD_NOT_BE_READ = "Request body could not be read.";
+    public static final String MOVIE_DISAPPEARED = "Movie disappeared";
 }

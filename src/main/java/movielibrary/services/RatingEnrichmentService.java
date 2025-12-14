@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
+import static movielibrary.utils.StringConstants.MOVIE_DISAPPEARED;
+
 @Service
 public class RatingEnrichmentService {
 
@@ -30,7 +32,7 @@ public class RatingEnrichmentService {
     @Transactional
     public void enrichRating(Long movieId) {
         Movie movie = repository.findById(movieId)
-                .orElseThrow(() -> new IllegalStateException("Movie disappeared"));
+                .orElseThrow(() -> new IllegalStateException(MOVIE_DISAPPEARED));
 
         ImdbResponseDto response;
 
@@ -43,7 +45,7 @@ public class RatingEnrichmentService {
                     .retrieve()
                     .body(ImdbResponseDto.class);
         } catch (Exception e) {
-            movie.setStatus(Status.FAILED_NO_MOVIE_WITH_THAT_TITLE);
+            movie.setStatus(Status.FAILED_OMDB_API_SERVER_ERROR);
             return;
         }
 
