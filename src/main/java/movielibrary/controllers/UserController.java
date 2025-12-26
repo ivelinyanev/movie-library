@@ -113,7 +113,7 @@ public class UserController {
     @Operation(
             summary = "Get a user by id"
     )
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> getById(@PathVariable Long id) {
 
@@ -125,9 +125,9 @@ public class UserController {
     @Operation(
             summary = "Get a user by username"
     )
-    @GetMapping("/username/{username}")
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> getByUsername(@PathVariable String username) {
+    public ResponseEntity<UserResponseDto> getByUsername(@RequestParam String username) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)

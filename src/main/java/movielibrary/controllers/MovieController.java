@@ -58,9 +58,9 @@ public class MovieController {
     @Operation(
             summary = "Get a movie by title"
     )
-    @GetMapping("/title/{title}")
+    @GetMapping
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<MovieResponseDto> getByTitle(@PathVariable String title) {
+    public ResponseEntity<MovieResponseDto> getByTitle(@RequestParam String title) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
