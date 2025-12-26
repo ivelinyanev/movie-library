@@ -41,15 +41,15 @@ public class RatingEnrichmentServiceTests {
 
     @BeforeEach
     void setup() throws Exception {
-        service = new RatingEnrichmentService(repository);
+        service = new RatingEnrichmentServiceImpl(repository);
 
         // inject the mocked client into the private final field via reflection
-        Field clientField = RatingEnrichmentService.class.getDeclaredField("client");
+        Field clientField = RatingEnrichmentServiceImpl.class.getDeclaredField("client");
         clientField.setAccessible(true);
         clientField.set(service, mockClient);
 
         // set api key field
-        Field keyField = RatingEnrichmentService.class.getDeclaredField("key");
+        Field keyField = RatingEnrichmentServiceImpl.class.getDeclaredField("key");
         keyField.setAccessible(true);
         keyField.set(service, "TEST_KEY");
     }

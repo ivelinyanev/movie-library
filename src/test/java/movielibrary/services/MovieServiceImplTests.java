@@ -29,7 +29,7 @@ public class MovieServiceImplTests {
     private MovieRepository movieRepository;
 
     @Mock
-    private RatingEnrichmentService ratingEnrichmentService;
+    private RatingEnrichmentServiceImpl ratingEnrichmentService;
 
     @InjectMocks
     private MovieServiceImpl service;
