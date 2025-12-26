@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,11 +36,11 @@ public class AuthController {
     /* ------------------------- Public part ------------------------- */
 
     @Operation(
-            summary = "Log in",
-            description = "Log in generates and sets a JWT token in cookies"
+            summary = "Get token",
+            description = "Provide credentials to get JWT token"
     )
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginUserDto dto) {
+    @PostMapping("/token")
+    public ResponseEntity<?> token(@Valid @RequestBody LoginUserDto dto) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.username(), dto.password())
@@ -51,37 +53,12 @@ public class AuthController {
                 user.getRoles().stream().map(r -> r.getName().name()).collect(Collectors.toSet())
         );
 
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(1 * 24 * 60 * 60)
-                .sameSite("Strict")
-                .build();
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("token", token);
+        tokenMap.put("user", user.getUsername());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .header("Set-Cookie", cookie.toString())
-                .build();
-    }
-
-    @Operation(
-            summary = "Log out",
-            description = "Log out sets an expired cookie, thus logging out the user"
-    )
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(0)
-                .sameSite("Strict")
-                .build();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Set-Cookie", cookie.toString())
-                .build();
+                .body(tokenMap);
     }
 }

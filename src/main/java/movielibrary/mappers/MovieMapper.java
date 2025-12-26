@@ -27,6 +27,7 @@ public class MovieMapper {
 
     public MovieResponseDto toResponseDto(Movie movie) {
         return new MovieResponseDto(
+                movie.getId(),
                 movie.getTitle(),
                 movie.getDirector(),
                 movie.getReleaseYear(),

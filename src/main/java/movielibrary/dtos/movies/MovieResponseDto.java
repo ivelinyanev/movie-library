@@ -5,6 +5,7 @@ import movielibrary.enums.Status;
 import java.time.Year;
 
 public record MovieResponseDto(
+        Long id,
         String title,
         String director,
         Year releaseYear,
